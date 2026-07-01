@@ -493,3 +493,9 @@ Add to `_Imports.razor`:
 @using Telerik.Blazor
 @using Telerik.Blazor.Components
 ```
+
+---
+
+## Setup & Commands
+
+See the **SETUP & COMMANDS** section in `CLAUDE.md` for all setup steps and commands (installing packages, creating the DB, scaffolding models, running the app).
