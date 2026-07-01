@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("timezone-manager")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+86bfb27861cb1a3fbc116ec7d7d922290fc0fcac")]
 [assembly: System.Reflection.AssemblyProductAttribute("timezone-manager")]
 [assembly: System.Reflection.AssemblyTitleAttribute("timezone-manager")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
