@@ -10,9 +10,8 @@ obj/
 *.suo
 .vscode/settings.json
 
-# .NET secrets and environment overrides
+# .NET secrets and environment overrides — real connection strings go in appsettings.Development.json (gitignored)
 appsettings.*.json
-!appsettings.Development.json
 
 # dotnet publish output
 publish/
