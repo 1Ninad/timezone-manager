@@ -1,0 +1,96 @@
+@* Records.razor
+   Displays all saved delivery records in a sortable, filterable grid.
+   UTC timestamps stored in the database are converted to the current viewer's local time
+   using the browser's JavaScript — whoever opens this page sees times in their own timezone. *@
+
+@page "/records"
+@rendermode InteractiveServer
+
+@inject IJSRuntime JS
+@inject DeliveryService DeliveryService
+
+<PageTitle>Records — Timezone Manager</PageTitle>
+
+<h1>Delivery Records</h1>
+
+@if (_isLoading)
+{
+    <p class="page-subtitle">Loading records...</p>
+}
+else
+{
+    <p class="page-subtitle">
+        All timestamps are shown in your local time
+        @if (!string.IsNullOrEmpty(_viewerTimezone))
+        {
+            <span>(@_viewerTimezone)</span>
+        }
+    </p>
+
+    @* TelerikGrid renders the records table with built-in sorting, filtering, and pagination.
+       Sortable="true" adds clickable column headers.
+       FilterMode.FilterRow adds a filter input row below the headers.
+       PageSize="20" shows 20 rows per page. *@
+    <TelerikGrid Data="@_records"
+                 Sortable="true"
+                 FilterMode="@GridFilterMode.FilterRow"
+                 Pageable="true"
+                 PageSize="20">
+        <GridColumns>
+            <GridColumn Field="@nameof(DeliveryRecordDisplay.DeliveryNumber)" Title="Delivery Number" />
+            <GridColumn Field="@nameof(DeliveryRecordDisplay.Plant)" Title="Plant" />
+            <GridColumn Field="@nameof(DeliveryRecordDisplay.Material)" Title="Material" />
+            <GridColumn Field="@nameof(DeliveryRecordDisplay.LocalTimestamp)" Title="Date & Time (Your Local)" />
+            <GridColumn Field="@nameof(DeliveryRecordDisplay.SubmitterTimezone)" Title="Entered From (Timezone)" />
+        </GridColumns>
+    </TelerikGrid>
+}
+
+@code {
+    private List<DeliveryRecordDisplay> _records = new();
+    private bool _isLoading = true;
+    private string _viewerTimezone = "";
+
+    // JS interop must run in OnAfterRenderAsync, not OnInitializedAsync.
+    // OnInitializedAsync runs on the server during prerendering before the browser connection
+    // is established — at that point there is no browser to ask for timezone information.
+    // OnAfterRenderAsync(firstRender: true) fires after Blazor has connected to the browser.
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender) return;
+
+        // Get the viewer's IANA timezone ID from their browser, e.g. "Asia/Tokyo".
+        _viewerTimezone = await JS.InvokeAsync<string>("timezoneInterop.getIanaTimezoneId");
+
+        var dbRecords = await DeliveryService.GetAllRecordsAsync();
+
+        if (dbRecords.Count > 0)
+        {
+            // Convert all UTC timestamps to ISO strings, then send them all to JS in one call.
+            // "o" format produces the ISO 8601 round-trip format: "2025-07-02T10:30:00.0000000Z"
+            var utcStrings = dbRecords.Select(r => r.TimestampUtc.ToString("o")).ToArray();
+
+            // Pass the array as a single JS argument by wrapping in object[].
+            // Without the wrapper, C#'s params would spread the array into individual arguments.
+            var localStrings = await JS.InvokeAsync<string[]>(
+                "timezoneInterop.convertUtcArrayToLocal",
+                new object[] { utcStrings });
+
+            // Pair each DB row with its corresponding local-time string by index.
+            _records = dbRecords.Select((record, index) => new DeliveryRecordDisplay
+            {
+                DeliveryNumber = record.DeliveryNumber,
+                Plant = record.Plant,
+                Material = record.Material,
+                LocalTimestamp = localStrings[index],
+                SubmitterTimezone = record.SubmitterTimezone
+            }).ToList();
+        }
+
+        _isLoading = false;
+
+        // Tell Blazor to re-render the component with the loaded data.
+        // Required here because we're in an async method that runs outside the normal render cycle.
+        StateHasChanged();
+    }
+}

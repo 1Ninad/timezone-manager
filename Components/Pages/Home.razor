@@ -1,7 +1,13 @@
-﻿@page "/"
+@* Home.razor
+   Redirects the root URL "/" to the New Entry page.
+   NavigationManager.NavigateTo works in both SSR (server redirect) and interactive mode. *@
 
-<PageTitle>Home</PageTitle>
+@page "/"
+@inject NavigationManager Nav
 
-<h1>Hello, world!</h1>
-
-Welcome to your new app.
+@code {
+    protected override void OnInitialized()
+    {
+        Nav.NavigateTo("/new-entry");
+    }
+}

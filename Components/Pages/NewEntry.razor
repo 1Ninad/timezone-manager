@@ -1,0 +1,137 @@
+@* NewEntry.razor
+   The input form page. Users enter Delivery Number, Plant, and Material.
+   The timestamp is captured automatically from the browser when Save is clicked —
+   the user never types a date or time. *@
+
+@page "/new-entry"
+@rendermode InteractiveServer
+
+@inject IJSRuntime JS
+@inject DeliveryService DeliveryService
+
+<PageTitle>New Entry — Timezone Manager</PageTitle>
+
+<h1>New Delivery Record</h1>
+
+<div class="form-card">
+    <p class="page-subtitle">
+        Fill in the fields below and click Save. The timestamp will be captured
+        automatically at the moment you submit.
+    </p>
+
+    @* EditForm is the standard Blazor form wrapper. It coordinates validation across all fields.
+       @key="_formKey" forces a full re-render when the form is reset after a successful save,
+       which clears the validation state along with the field values. *@
+    <EditForm @key="@_formKey" Model="@_form" OnValidSubmit="@HandleValidSubmit">
+        <DataAnnotationsValidator />
+
+        <div class="field-group">
+            <label class="field-label" for="delivery-number">Delivery Number</label>
+            @* TelerikNumericTextBox prevents non-numeric input and disables the decimal separator.
+               T="long" tells Blazor which numeric type to bind to. *@
+            <TelerikNumericTextBox T="long"
+                                   Id="delivery-number"
+                                   @bind-Value="@_form.DeliveryNumber"
+                                   Min="1"
+                                   Decimals="0"
+                                   Format="0"
+                                   Placeholder="e.g. 4500012345"
+                                   Width="100%" />
+            <ValidationMessage For="@(() => _form.DeliveryNumber)" />
+        </div>
+
+        <div class="field-group">
+            <label class="field-label" for="plant">Plant</label>
+            <TelerikTextBox Id="plant"
+                            @bind-Value="@_form.Plant"
+                            Placeholder="e.g. Stockholm"
+                            Width="100%" />
+            <ValidationMessage For="@(() => _form.Plant)" />
+        </div>
+
+        <div class="field-group">
+            <label class="field-label" for="material">Material (Product Code)</label>
+            <TelerikTextBox Id="material"
+                            @bind-Value="@_form.Material"
+                            Placeholder="e.g. 1234567"
+                            Width="100%" />
+            <ValidationMessage For="@(() => _form.Material)" />
+        </div>
+
+        <div class="form-actions">
+            <TelerikButton ButtonType="ButtonType.Submit"
+                           ThemeColor="@ThemeConstants.Button.ThemeColor.Primary"
+                           Enabled="@(!_isSaving)">
+                @(_isSaving ? "Saving..." : "Save Record")
+            </TelerikButton>
+        </div>
+    </EditForm>
+</div>
+
+@* TelerikNotification renders toast alerts in the top-right corner.
+   It needs to be placed inside TelerikRootComponent (done in MainLayout.razor). *@
+<TelerikNotification @ref="@_notification"
+                     HorizontalPosition="@NotificationHorizontalPosition.Right"
+                     VerticalPosition="@NotificationVerticalPosition.Top" />
+
+@code {
+    private DeliveryFormModel _form = new();
+    private bool _isSaving = false;
+    private int _formKey = 0;
+    private TelerikNotification _notification = null!;
+
+    private async Task HandleValidSubmit()
+    {
+        _isSaving = true;
+
+        try
+        {
+            // Both JS calls happen right at the moment the user clicks Save, so both values
+            // reflect the exact same instant. getCurrentUtcIso returns a UTC ISO 8601 string
+            // (e.g. "2025-07-02T10:30:00.000Z"). getIanaTimezoneId returns the IANA timezone
+            // ID (e.g. "Europe/Stockholm").
+            var utcIso = await JS.InvokeAsync<string>("timezoneInterop.getCurrentUtcIso");
+            var timezoneId = await JS.InvokeAsync<string>("timezoneInterop.getIanaTimezoneId");
+
+            // DateTimeStyles.RoundtripKind ensures the parsed DateTime has Kind = Utc,
+            // not Unspecified. This matters when EF Core writes the value to datetime2.
+            var timestampUtc = DateTime.Parse(
+                utcIso,
+                null,
+                System.Globalization.DateTimeStyles.RoundtripKind);
+
+            await DeliveryService.SaveRecordAsync(
+                _form.DeliveryNumber,
+                _form.Plant,
+                _form.Material,
+                timestampUtc,
+                timezoneId);
+
+            _notification.Show(new NotificationModel
+            {
+                Text = "Record saved successfully.",
+                ThemeColor = ThemeConstants.Notification.ThemeColor.Success,
+                CloseAfter = 5000
+            });
+
+            // Reset the form by replacing the model and incrementing the key.
+            // The @key change causes Blazor to destroy and recreate the EditForm,
+            // which also clears the validation state.
+            _form = new DeliveryFormModel();
+            _formKey++;
+        }
+        catch (Exception ex)
+        {
+            _notification.Show(new NotificationModel
+            {
+                Text = $"Error saving record: {ex.Message}",
+                ThemeColor = ThemeConstants.Notification.ThemeColor.Error,
+                CloseAfter = 0   // 0 = stays visible until the user closes it manually
+            });
+        }
+        finally
+        {
+            _isSaving = false;
+        }
+    }
+}

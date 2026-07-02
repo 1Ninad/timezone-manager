@@ -1,1 +1,30 @@
+## .gitignore for .NET / Blazor project
+
+# Build output directories — generated on every build, never commit these
+bin/
+obj/
+
+# User-specific VS Code and IDE settings
+.vs/
+*.user
+*.suo
+.vscode/settings.json
+
+# .NET secrets and environment overrides
+appsettings.*.json
+!appsettings.Development.json
+
+# dotnet publish output
+publish/
+
+# NuGet restore logs
+*.nupkg
+.nuget/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Claude Code files (internal tooling, not for the repo)
 CLAUDE.md
+.claude/

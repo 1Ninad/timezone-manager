@@ -1,23 +1,30 @@
-﻿@inherits LayoutComponentBase
+@* MainLayout.razor
+   The shell that wraps every page — sidebar, top bar, and main content area.
+   TelerikRootComponent must wrap all content so Telerik popups and notifications
+   have a place to render (they appear outside the normal component tree). *@
 
-<div class="page">
-    <div class="sidebar">
-        <NavMenu />
-    </div>
+@inherits LayoutComponentBase
 
-    <main>
-        <div class="top-row px-4">
-            <a href="https://learn.microsoft.com/aspnet/core/" target="_blank">About</a>
+<TelerikRootComponent>
+    <div class="page">
+        <div class="sidebar">
+            <NavMenu />
         </div>
 
-        <article class="content px-4">
-            @Body
-        </article>
-    </main>
-</div>
+        <main>
+            <div class="top-row px-4">
+                <span class="app-title-top">Tetra Pak — Timezone Manager</span>
+            </div>
 
-<div id="blazor-error-ui" data-nosnippet>
-    An unhandled error has occurred.
-    <a href="." class="reload">Reload</a>
-    <span class="dismiss">🗙</span>
-</div>
+            <article class="content px-4">
+                @Body
+            </article>
+        </main>
+    </div>
+
+    <div id="blazor-error-ui" data-nosnippet>
+        An unhandled error has occurred.
+        <a href="." class="reload">Reload</a>
+        <span class="dismiss">🗙</span>
+    </div>
+</TelerikRootComponent>

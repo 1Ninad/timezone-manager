@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -7,6 +7,8 @@
     <base href="/" />
     <ResourcePreloader />
     <link rel="stylesheet" href="@Assets["lib/bootstrap/dist/css/bootstrap.min.css"]" />
+    <!-- Kendo UI (Telerik) default theme — base styles for all Telerik components -->
+    <link rel="stylesheet" href="_content/Telerik.UI.for.Blazor/css/kendo-theme-default/all.css" />
     <link rel="stylesheet" href="@Assets["app.css"]" />
     <link rel="stylesheet" href="@Assets["timezone-manager.styles.css"]" />
     <ImportMap />
@@ -18,6 +20,10 @@
     <Routes />
     <ReconnectModal />
     <script src="@Assets["_framework/blazor.web.js"]"></script>
+    <!-- Telerik JS must load after blazor.web.js -->
+    <script src="_content/Telerik.UI.for.Blazor/js/telerik-blazor.js" defer="defer"></script>
+    <!-- Our JS for reading timezone/time from the user's browser -->
+    <script src="@Assets["js/timezone-interop.js"]"></script>
 </body>
 
 </html>

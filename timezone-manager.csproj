@@ -10,6 +10,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <!-- EF Core for SQL Server (database access) -->
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.9">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
@@ -19,6 +20,11 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
+
+    <!-- Telerik (Kendo UI) for Blazor — provides TelerikGrid, TelerikTextBox, TelerikButton, etc.
+         Run "dotnet add package Telerik.UI.for.Blazor" to install the latest version.
+         Requires the Telerik NuGet source — see CLAUDE.md setup step 2. -->
+    <PackageReference Include="Telerik.UI.for.Blazor" Version="*" />
   </ItemGroup>
 
 </Project>
