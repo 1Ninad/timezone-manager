@@ -67,7 +67,7 @@ else
         {
             // Convert all UTC timestamps to ISO strings, then send them all to JS in one call.
             // "o" format produces the ISO 8601 round-trip format: "2025-07-02T10:30:00.0000000Z"
-            var utcStrings = dbRecords.Select(r => r.TimestampUtc.ToString("o")).ToArray();
+            var utcStrings = dbRecords.Select(r => DateTime.SpecifyKind(r.TimestampUtc, DateTimeKind.Utc).ToString("o")).ToArray();
 
             // Pass the array as a single JS argument by wrapping in object[].
             // Without the wrapper, C#'s params would spread the array into individual arguments.
