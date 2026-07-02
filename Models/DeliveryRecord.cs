@@ -12,7 +12,7 @@ namespace timezone_manager.Models;
 public partial class DeliveryRecord
 {
     public int Id { get; set; }
-    public long DeliveryNumber { get; set; }
+    public string DeliveryNumber { get; set; } = null!;
     public string Plant { get; set; } = null!;
     public string Material { get; set; } = null!;
 

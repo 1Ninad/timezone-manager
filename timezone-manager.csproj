@@ -24,7 +24,7 @@
     <!-- Telerik (Kendo UI) for Blazor — provides TelerikGrid, TelerikTextBox, TelerikButton, etc.
          Run "dotnet add package Telerik.UI.for.Blazor" to install the latest version.
          Requires the Telerik NuGet source — see CLAUDE.md setup step 2. -->
-    <PackageReference Include="Telerik.UI.for.Blazor" Version="*" />
+    <PackageReference Include="Telerik.UI.for.Blazor" Version="14.0.0" />
   </ItemGroup>
 
 </Project>

@@ -27,16 +27,12 @@
 
         <div class="field-group">
             <label class="field-label" for="delivery-number">Delivery Number</label>
-            @* TelerikNumericTextBox prevents non-numeric input and disables the decimal separator.
-               T="long" tells Blazor which numeric type to bind to. *@
-            <TelerikNumericTextBox T="long"
-                                   Id="delivery-number"
-                                   @bind-Value="@_form.DeliveryNumber"
-                                   Min="1"
-                                   Decimals="0"
-                                   Format="0"
-                                   Placeholder="e.g. 4500012345"
-                                   Width="100%" />
+            @* TelerikTextBox used instead of TelerikNumericTextBox so leading zeros are preserved.
+               A numeric field would strip "0045" to "45" — delivery numbers can start with 0. *@
+            <TelerikTextBox Id="delivery-number"
+                            @bind-Value="@_form.DeliveryNumber"
+                            Placeholder="e.g. 0045001234"
+                            Width="100%" />
             <ValidationMessage For="@(() => _form.DeliveryNumber)" />
         </div>
 
@@ -44,7 +40,7 @@
             <label class="field-label" for="plant">Plant</label>
             <TelerikTextBox Id="plant"
                             @bind-Value="@_form.Plant"
-                            Placeholder="e.g. Stockholm"
+                            Placeholder="e.g. BR07"
                             Width="100%" />
             <ValidationMessage For="@(() => _form.Plant)" />
         </div>

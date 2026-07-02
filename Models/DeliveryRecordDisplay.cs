@@ -10,7 +10,7 @@ namespace timezone_manager.Models;
 
 public class DeliveryRecordDisplay
 {
-    public long DeliveryNumber { get; set; }
+    public string DeliveryNumber { get; set; } = "";
     public string Plant { get; set; } = "";
     public string Material { get; set; } = "";
 

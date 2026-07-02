@@ -27,7 +27,7 @@ public class DeliveryService
     // timestampUtc must already be in UTC — the caller (NewEntry.razor) gets this from JavaScript.
     // submitterTimezone is the IANA ID captured from the browser, e.g. "Europe/Stockholm".
     public async Task SaveRecordAsync(
-        long deliveryNumber,
+        string deliveryNumber,
         string plant,
         string material,
         DateTime timestampUtc,

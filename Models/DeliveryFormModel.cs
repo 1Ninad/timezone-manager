@@ -15,8 +15,9 @@ namespace timezone_manager.Models;
 public class DeliveryFormModel
 {
     [Required(ErrorMessage = "Delivery Number is required")]
-    [Range(1, long.MaxValue, ErrorMessage = "Must be a positive number")]
-    public long DeliveryNumber { get; set; }
+    [RegularExpression(@"^\d+$", ErrorMessage = "Must contain digits only")]
+    [MaxLength(20)]
+    public string DeliveryNumber { get; set; } = "";
 
     [Required(ErrorMessage = "Plant is required")]
     [MaxLength(50)]
